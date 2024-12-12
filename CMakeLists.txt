@@ -77,3 +77,8 @@ add_pntr(${PROJECT_NAME}_sdl SDL)
 # this will use termex for window, miniaudio for sound
 add_executable(${PROJECT_NAME}_cli main.c)
 add_pntr(${PROJECT_NAME}_cli termex miniaudio)
+
+# this will use termex default of no sound
+add_executable(${PROJECT_NAME}_cli2 main.c)
+add_pntr(${PROJECT_NAME}_cli2 termex)
+
