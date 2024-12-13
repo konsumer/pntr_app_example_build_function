@@ -44,8 +44,6 @@ if (EMSCRITPEN)
   )
 endif()
 
-# there is an issue building SDL_mixer so I just do these for now
-
 # use raylib window/sound
 add_pntr(${PROJECT_NAME} RAYLIB)
 
