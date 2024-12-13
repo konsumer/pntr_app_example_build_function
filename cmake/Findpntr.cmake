@@ -211,7 +211,6 @@ function(add_pntr target)
     # TODO: handle options like DRM, etc
     FetchContent_Declare(
       raylib
-      FIND_PACKAGE_ARGS
       URL "https://github.com/raysan5/raylib/archive/refs/tags/5.5.zip"
     )
     FetchContent_MakeAvailable(raylib)
@@ -234,7 +233,6 @@ function(add_pntr target)
 
     FetchContent_Declare(
       SDL2
-      FIND_PACKAGE_ARGS
       URL "https://github.com/libsdl-org/SDL/archive/refs/tags/release-2.30.10.zip"
     )
     FetchContent_MakeAvailable(SDL2)
@@ -245,7 +243,6 @@ function(add_pntr target)
     if ("${PNTR_APP_SOUND}" STREQUAL "SDL")
       FetchContent_Declare(
           SDL2_mixer
-          FIND_PACKAGE_ARGS
           URL "https://github.com/libsdl-org/SDL_mixer/archive/refs/tags/release-2.8.0.zip"
       )
       FetchContent_MakeAvailable(SDL2_mixer)
