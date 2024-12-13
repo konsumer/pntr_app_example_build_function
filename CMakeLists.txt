@@ -74,11 +74,11 @@ add_pntr(${PROJECT_NAME}_raylib_drm RAYLIB_DRM)
 add_executable(${PROJECT_NAME}_sdl main.c)
 add_pntr(${PROJECT_NAME}_sdl SDL)
 
-# this will use termex for window, miniaudio for sound
+# this will use termbox for window, miniaudio for sound
 add_executable(${PROJECT_NAME}_cli main.c)
-add_pntr(${PROJECT_NAME}_cli termex miniaudio)
+add_pntr(${PROJECT_NAME}_cli termbox miniaudio)
 
-# this will use termex default of no sound
+# this will use termbox default of no sound
 add_executable(${PROJECT_NAME}_cli2 main.c)
-add_pntr(${PROJECT_NAME}_cli2 termex)
+add_pntr(${PROJECT_NAME}_cli2 termbox)
 

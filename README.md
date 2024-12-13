@@ -1,4 +1,4 @@
-This is some ideas aroudn simplifying build.
+This is some ideas around simplifying build.
 
 See [cmake](CMakeLists.txt) for how it works.
 
