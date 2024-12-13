@@ -117,6 +117,7 @@ function(add_pntr target)
   string(REPLACE "raylib_raylib" "raylib" pntr_lib_name "${pntr_lib_name}")
   string(REPLACE "sdl_sdl" "sdl" pntr_lib_name "${pntr_lib_name}")
   string(REPLACE "retro_retro" "retro" pntr_lib_name "${pntr_lib_name}")
+  string(REPLACE "emscripten_emscripten" "emscripten" pntr_lib_name "${pntr_lib_name}")
 
   # TODO: add suffix for different options, like pntr_app_raylib_drm_raylib
 
@@ -145,13 +146,14 @@ function(add_pntr target)
   # here is where you link anything to lib you need
   # add_library(${pntr_lib_name} STATIC "${fpntr_SOURCE_DIR}/pntr_app.c")
   if (NOT TARGET "${pntr_lib_name}")
-    add_library("${pntr_lib_name}" STATIC "${CMAKE_CURRENT_LIST_DIR}/pntr_app.c")
+    add_library("${pntr_lib_name}" STATIC "${PROJECT_SOURCE_DIR}/tools/pntr_app.c")
 
     set_property(TARGET "${pntr_lib_name}" PROPERTY C_STANDARD 11)
 
     if ("${PNTR_APP_WINDOW}" STREQUAL "SDL")
       target_compile_definitions("${pntr_lib_name}" PUBLIC PNTR_APP_SDL)
     endif()
+
     if ("${PNTR_APP_SOUND}" STREQUAL "SDL")
       target_compile_definitions("${pntr_lib_name}" PUBLIC PNTR_APP_SDL_MIXER)
     endif()
@@ -177,15 +179,19 @@ function(add_pntr target)
     if ("${PNTR_APP_WINDOW}" STREQUAL "RETRO")
       target_compile_definitions("${pntr_lib_name}" PUBLIC PNTR_APP_LIBRETRO)
       set_target_properties("${pntr_lib_name}" PROPERTIES POSITION_INDEPENDENT_CODE ON)
-    else()
-      # Strict Warnings and Errors
-      # will fail to build libretro
-      if(MSVC)
-          target_compile_options("${pntr_lib_name}" PRIVATE /W4 /WX)
-      else()
-          target_compile_options("${pntr_lib_name}" PRIVATE -Wall -Wextra -Wpedantic -Werror)
-      endif()
     endif()
+
+    if ("${PNTR_APP_WINDOW}" STREQUAL "EMSCRIPTEN")
+      target_compile_definitions("${pntr_lib_name}" PUBLIC PNTR_APP_WEB)
+    endif()
+
+    # Strict Warnings and Errors
+    # this fails on emscripten and libretro
+    # if(MSVC)
+    #     target_compile_options("${pntr_lib_name}" PRIVATE /W4 /WX)
+    # else()
+    #     target_compile_options("${pntr_lib_name}" PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    # endif()
   endif()
 
   target_link_libraries("${target}" "${pntr_lib_name}")
@@ -199,7 +205,7 @@ function(add_pntr target)
     )
     FetchContent_MakeAvailable(libretro)
     include_directories("${libretro_SOURCE_DIR}/include")
-    target_sources("${pntr_lib_name}" PRIVATE 
+    target_sources("${pntr_lib_name}" PRIVATE
       "${libretro_SOURCE_DIR}/audio/audio_mixer.c"
       "${libretro_SOURCE_DIR}/audio/conversion/float_to_s16.c"
       "${libretro_SOURCE_DIR}/memmap/memalign.c"
