@@ -6,7 +6,7 @@
 # add_executable(mything main.c)
 # add_pntr(mything TERMBOX MINIAUDIO)
 
-# available window options:
+## available window options:
 # NO_WINDOW
 # RAYLIB
 # RAYLIB_OLDPI
@@ -22,7 +22,7 @@
 # SDL_SOUND
 # MINIAUDIO
 
-## DEFAULTS to raylib or EMSCRIPTEN
+## DEFAULTS to RAYLIB/RAYLIB_SOUND or EMSCRIPTEN (if running in emcmake)
 
 # this contains the main-override and basic window/input setup, like this is the "frame" of things
 set(PNTR_APP_DEFAULT_WINDOW "RAYLIB")
