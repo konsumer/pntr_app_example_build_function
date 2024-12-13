@@ -148,14 +148,6 @@ function(add_pntr target)
 
     set_property(TARGET "${pntr_lib_name}" PROPERTY C_STANDARD 11)
 
-    # Strict Warnings and Errors
-    # will fail to build libretro
-    # if(MSVC)
-    #     target_compile_options("${pntr_lib_name}" PRIVATE /W4 /WX)
-    # else()
-    #     target_compile_options("${pntr_lib_name}" PRIVATE -Wall -Wextra -Wpedantic -Werror)
-    # endif()
-
     if ("${PNTR_APP_WINDOW}" STREQUAL "SDL")
       target_compile_definitions("${pntr_lib_name}" PUBLIC PNTR_APP_SDL)
     endif()
@@ -184,6 +176,14 @@ function(add_pntr target)
     if ("${PNTR_APP_WINDOW}" STREQUAL "RETRO")
       target_compile_definitions("${pntr_lib_name}" PUBLIC PNTR_APP_LIBRETRO)
       set_target_properties("${pntr_lib_name}" PROPERTIES POSITION_INDEPENDENT_CODE ON)
+    else()
+      # Strict Warnings and Errors
+      # will fail to build libretro
+      if(MSVC)
+          target_compile_options("${pntr_lib_name}" PRIVATE /W4 /WX)
+      else()
+          target_compile_options("${pntr_lib_name}" PRIVATE -Wall -Wextra -Wpedantic -Werror)
+      endif()
     endif()
   endif()
 
