@@ -2,7 +2,7 @@
 # this file should be all a user needs to add pntr_app to their project
 
 # this contains the main-override and basic window/input setup, like this is the "frame" of things
-set(PNTR_APP_DEFAULT_WINDOW "RAYLIB") 
+set(PNTR_APP_DEFAULT_WINDOW "RAYLIB")
 
 # this contains the sound lib in most cases, this is tied to window lib, but sometimes not (like CLI)
 set(PNTR_APP_DEFAULT_SOUND "RAYLIB")
@@ -83,7 +83,7 @@ function(add_pntr target)
       set(PNTR_APP_SOUND "NONE")
     endif()
   endif()
-  
+
   if(NOT DEFINED PNTR_APP_WINDOW)
     if ("${PNTR_APP_SOUND}" STREQUAL "RAYLIB")
       set(PNTR_APP_WINDOW "RAYLIB")
@@ -92,7 +92,7 @@ function(add_pntr target)
       set(PNTR_APP_WINDOW "SDL")
     endif()
   endif()
-  
+
   # set defaults
   if (NOT DEFINED PNTR_APP_WINDOW)
     if (EMSCRIPTEN)
@@ -147,7 +147,7 @@ function(add_pntr target)
     add_library("${pntr_lib_name}" STATIC "${CMAKE_CURRENT_LIST_DIR}/pntr_app.c")
 
     set_property(TARGET "${pntr_lib_name}" PROPERTY C_STANDARD 11)
-    
+
     # Strict Warnings and Errors
     # will fail to build libretro
     # if(MSVC)
@@ -155,7 +155,7 @@ function(add_pntr target)
     # else()
     #     target_compile_options("${pntr_lib_name}" PRIVATE -Wall -Wextra -Wpedantic -Werror)
     # endif()
-    
+
     if ("${PNTR_APP_WINDOW}" STREQUAL "SDL")
       target_compile_definitions("${pntr_lib_name}" PUBLIC PNTR_APP_SDL)
     endif()
@@ -166,7 +166,7 @@ function(add_pntr target)
     if ("${PNTR_APP_WINDOW}" STREQUAL "RAYLIB")
       target_compile_definitions("${pntr_lib_name}" PUBLIC PNTR_APP_RAYLIB)
     endif()
-    
+
     # TODO: this isn't used yet, as RAYLIB sound/window are tied, but they could be seperated
     if ("${PNTR_APP_SOUND}" STREQUAL "RAYLIB")
       target_compile_definitions("${pntr_lib_name}" PUBLIC PNTR_APP_RAYLIB_SOUND)
@@ -175,7 +175,7 @@ function(add_pntr target)
     if ("${PNTR_APP_WINDOW}" STREQUAL "TERMBOX")
       target_compile_definitions("${pntr_lib_name}" PUBLIC PNTR_APP_CLI)
     endif()
-    
+
     if ("${PNTR_APP_WINDOW}" STREQUAL "CLI")
       target_compile_definitions("${pntr_lib_name}" PUBLIC PNTR_APP_CLI)
       target_compile_definitions("${pntr_lib_name}" PUBLIC PNTR_APP_DISABLE_TERMBOX)
@@ -272,7 +272,7 @@ function(add_pntr target)
       set(SDL2MIXER_WAVPACK OFF)
       set(SDL2MIXER_SAMPLES_INSTALL OFF)
       set(SDL2MIXER_BUILD_SHARED_LIBS OFF)
-      
+
       target_link_libraries("${pntr_lib_name}" SDL2_mixer::SDL2_mixer-static)
 
       # this appears to be needed by sdl_mixer, at least on mac
@@ -281,5 +281,4 @@ function(add_pntr target)
       include_directories(${SDL2_mixer_INCLUDE_DIRS})
     endif()
   endif()
-
 endfunction()
