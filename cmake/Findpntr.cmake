@@ -10,6 +10,12 @@ set(PNTR_APP_DEFAULT_SOUND "SDL")
 # global-option to allow in-tree pntr_app (for demos in that repo)
 option(USE_LOCAL_PNTR_APP "Force using the current directory as source of pntr_app" OFF)
 
+# TODO: check for system-libs before fetching things
+
+# this is needed to fix a problem with <include.h> vs "include.h"
+# TODO: I could probly target this just to SDL
+set(CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES TRUE)
+
 include(FetchContent)
 
 # this will allow you to easily add pntr/pntr_app to your application
@@ -105,9 +111,9 @@ function(add_pntr target)
   message("--   PNTR_APP_WINDOW: ${PNTR_APP_WINDOW}")
   message("--   PNTR_APP_SOUND: ${PNTR_APP_SOUND}")
   message("--   Lib Name: ${pntr_lib_name}")
-  message("--   Downloading dependencies.")
+  message("--   Downloading/building dependencies.")
 
-  # download deps that are needed by window/sound
+  # download deps that are needed by window/sound (that have not been downloaded)
 
   FetchContent_Declare(fpntr
     URL https://github.com/robloach/pntr/archive/refs/heads/master.zip
@@ -127,10 +133,38 @@ function(add_pntr target)
   # add_library(${pntr_lib_name} STATIC "${fpntr_SOURCE_DIR}/pntr_app.c")
   if (NOT TARGET "${pntr_lib_name}")
     add_library("${pntr_lib_name}" STATIC "${CMAKE_CURRENT_LIST_DIR}/pntr_app.c")
-  endif()
-  target_link_libraries("${target}" "${pntr_lib_name}")
 
-  # TODO: add defines so user's C code can see options selected
+    set_property(TARGET "${pntr_lib_name}" PROPERTY C_STANDARD 11)
+    
+    # Strict Warnings and Errors
+    if(MSVC)
+        target_compile_options("${pntr_lib_name}" PRIVATE /W4 /WX)
+    else()
+        target_compile_options("${pntr_lib_name}" PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    endif()
+    
+    if ("${PNTR_APP_WINDOW}" STREQUAL "SDL")
+      target_compile_definitions("${pntr_lib_name}" PUBLIC PNTR_APP_SDL)
+    endif()
+    if ("${PNTR_APP_SOUND}" STREQUAL "SDL")
+      target_compile_definitions("${pntr_lib_name}" PUBLIC PNTR_APP_SDL_MIXER)
+    endif()
+
+    if ("${PNTR_APP_WINDOW}" STREQUAL "RAYLIB")
+      target_compile_definitions("${pntr_lib_name}" PUBLIC PNTR_APP_RAYLIB)
+    endif()
+    
+    # TODO: this isn't used yet, as RAYLIB sound/window are tied, but they could be seperated
+    if ("${PNTR_APP_SOUND}" STREQUAL "RAYLIB")
+      target_compile_definitions("${pntr_lib_name}" PUBLIC PNTR_APP_RAYLIB_SOUND)
+    endif()
+
+    # TODO: add lots more defines for pntr_app static lib here
+  endif()
+
+  target_link_libraries("${target}" "${pntr_lib_name}")
+  include_directories("${fpntr_app_SOURCE_DIR}/include")
+  include_directories("${fpntr_SOURCE_DIR}")
 
   if ("${PNTR_APP_SOUND}" STREQUAL "RAYLIB" OR "${PNTR_APP_WINDOW}" STREQUAL "RAYLIB")
     set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
@@ -141,17 +175,66 @@ function(add_pntr target)
       URL https://github.com/raysan5/raylib/archive/refs/tags/5.5.tar.gz
     )
     FetchContent_MakeAvailable(raylib)
-    target_link_libraries(${pntr_lib_name} raylib)
+    target_link_libraries("${pntr_lib_name}" raylib)
+    if (APPLE AND NOT EMSCRIPTEN)
+      target_link_libraries("${pntr_lib_name}" "-framework IOKit" "-framework Cocoa" "-framework OpenGL")
+    endif()
   endif()
 
   if ("${PNTR_APP_SOUND}" STREQUAL "SDL" OR "${PNTR_APP_WINDOW}" STREQUAL "SDL")
-    # TODO: set tons of SDL options here
+    set(SDL_SHARED FALSE)
+    set(SDL2_SHARED FALSE)
+    set(SDL_STATIC TRUE)
+    set(SDL_TEST FALSE)
+    set(SDL_TESTS FALSE)
+    set(INTERFACE_SDL2_SHARED FALSE)
+    set(SDL2_DISABLE_UNINSTALL TRUE)
+    set(SDL2_DISABLE_INSTALL TRUE)
+    set(SDL_INSTALL_TESTS FALSE)
+
     FetchContent_Declare(
-      sdl
+      SDL2
       URL https://github.com/libsdl-org/SDL/archive/refs/tags/release-2.30.10.tar.gz
     )
-    FetchContent_MakeAvailable(sdl)
-    # TODO: link to SDL here
+    FetchContent_MakeAvailable(SDL2)
+    target_link_libraries("${pntr_lib_name}" SDL2-static)
+
+    if ("${PNTR_APP_SOUND}" STREQUAL "SDL")
+      FetchContent_Declare(
+          SDL2MixerSource
+          URL https://github.com/libsdl-org/SDL_mixer/archive/refs/tags/release-2.8.0.tar.gz
+      )
+      FetchContent_MakeAvailable(SDL2MixerSource)
+
+      # TODO: I seem to need this to make SDL2_mixer::SDL2_mixer-static available, but maybe there is a better way?
+      find_package(SDL2_mixer REQUIRED)
+
+      set(SDL2MIXER_VORBIS STB)
+      set(SDL2MIXER_INSTALL OFF)
+      set(SDL2MIXER_DEPS_SHARED OFF)
+      set(SDL2MIXER_VENDORED OFF)
+      set(SDL2MIXER_SAMPLES OFF)
+      set(SDL2MIXER_CMD OFF)
+      set(SDL2MIXER_FLAC OFF)
+      set(SDL2MIXER_MOD OFF)
+      set(SDL2MIXER_MP3 OFF)
+      set(SDL2MIXER_MIDI_NATIVE OFF)
+      set(SDL2MIXER_OPUS OFF)
+      set(SDL2MIXER_OPUS_SHARED OFF)
+      set(SDL2MIXER_MIDI_FLUIDSYNTH OFF)
+      set(SDL2MIXER_MP3_MPG123 OFF)
+      set(SDL2MIXER_MP3_DRMP3 OFF)
+      set(SDL2MIXER_MOD_XMP OFF)
+      set(SDL2MIXER_MOD_MODPLUG OFF)
+      set(SDL2MIXER_FLAC_DRFLAC OFF)
+      set(SDL2MIXER_FLAC_LIBFLAC OFF)
+      set(SDL2MIXER_VORBIS_VORBISFILE OFF)
+      set(SDL2MIXER_WAVPACK OFF)
+      set(SDL2MIXER_SAMPLES_INSTALL OFF)
+      set(SDL2MIXER_BUILD_SHARED_LIBS OFF)
+      
+      target_link_libraries("${pntr_lib_name}" SDL2_mixer::SDL2_mixer-static)
+    endif()
   endif()
 
   if ("${PNTR_APP_WINDOW}" STREQUAL "TERMBOX")

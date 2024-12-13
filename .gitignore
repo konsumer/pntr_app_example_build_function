@@ -1,3 +1,8 @@
 .DS_Store
 /build/
 /wbuild/
+
+# outputs
+/myproject*
+/myproject*.exe
+/myproject-libretro.*

@@ -49,36 +49,43 @@ else()
   )
 endif()
 
+# there is an issue building SDL_mixer so I just do this one
+add_pntr(${PROJECT_NAME} RAYLIB)
+
 # other examples
 # these should be behind EMSCRIPTEN check, since they don't really make sense on non-native
 # these are case-insensitive
 # in pntr_app repo, I could loop (foreach or glob) through all the examples here and build many target examples for each demo
 # these could also be pulled form a central option, if everything is built on that (like if you have 10 targets, and want them all built for raylib)
 
-# default is just recommended (maybe SDL is good default)
-add_pntr(${PROJECT_NAME})
+# # default is just recommended (maybe SDL is good default)
+# add_pntr(${PROJECT_NAME})
 
-# this will use raylib for window/sound
-add_executable(${PROJECT_NAME}_raylib main.c)
-add_pntr(${PROJECT_NAME}_raylib RAYLIB)
+# # this will use raylib for window/sound
+# add_executable(${PROJECT_NAME}_raylib main.c)
+# add_pntr(${PROJECT_NAME}_raylib RAYLIB)
 
-# this will use libretro for window/sound
-add_library(${PROJECT_NAME}-libretro main.c)
-add_pntr(${PROJECT_NAME}-libretro RETRO)
+# # this will use libretro for window/sound
+# add_library(${PROJECT_NAME}-libretro main.c)
+# add_pntr(${PROJECT_NAME}-libretro RETRO)
 
-# this will use raylib window/sound, but set drm option for raylib
-add_executable(${PROJECT_NAME}_raylib_drm main.c)
-add_pntr(${PROJECT_NAME}_raylib_drm RAYLIB_DRM)
+# # this will use raylib window/sound, but set drm option for raylib
+# add_executable(${PROJECT_NAME}_raylib_drm main.c)
+# add_pntr(${PROJECT_NAME}_raylib_drm RAYLIB_DRM)
 
-# this will use sdl window/sound
-add_executable(${PROJECT_NAME}_sdl main.c)
-add_pntr(${PROJECT_NAME}_sdl SDL)
+# # this will use sdl window/sound
+# add_executable(${PROJECT_NAME}_sdl main.c)
+# add_pntr(${PROJECT_NAME}_sdl SDL)
 
-# this will use termbox for window, miniaudio for sound
-add_executable(${PROJECT_NAME}_cli main.c)
-add_pntr(${PROJECT_NAME}_cli termbox miniaudio)
+# # this will use termbox for window, miniaudio for sound
+# add_executable(${PROJECT_NAME}_cli main.c)
+# add_pntr(${PROJECT_NAME}_cli TERMBOX MINIAUDIO)
 
-# this will use termbox default of no sound
-add_executable(${PROJECT_NAME}_cli2 main.c)
-add_pntr(${PROJECT_NAME}_cli2 termbox)
+# # this will use termbox default of no sound
+# add_executable(${PROJECT_NAME}_cli2 main.c)
+# add_pntr(${PROJECT_NAME}_cli2 TERMBOX)
+
+# # this will build "ugly" CLI
+# add_executable(${PROJECT_NAME}_cli3 main.c)
+# add_pntr(${PROJECT_NAME}_cli3 CLI)
 
