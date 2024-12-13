@@ -1,7 +1,7 @@
 # this is an example project cmake
 # normal user-project cmake stuff
 
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.22)
 project(myproject)
 set(CMAKE_C_STANDARD 23)
 
@@ -34,7 +34,7 @@ find_package(pntr REQUIRED)
 # setup an example app
 add_executable(${PROJECT_NAME} main.c)
 
-# I like to put the executable in root or webroot, and I use mjs, no shell
+# I like to put the output in webroot, and I use mjs, no shell
 # this is sort of specific to user app, though, not a pntr_app thing
 if (EMSCRITPEN)
   set_target_properties(${PROJECT_NAME}
@@ -42,8 +42,6 @@ if (EMSCRITPEN)
     SUFFIX ".mjs"
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/docs"
   )
-else()
-  set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}")
 endif()
 
 # there is an issue building SDL_mixer so I just do these for now
@@ -53,8 +51,7 @@ add_pntr(${PROJECT_NAME} RAYLIB)
 
 # this will use sdl window/nosound
 add_executable(${PROJECT_NAME}_sdl main.c)
-add_pntr(${PROJECT_NAME}_sdl SDL NO_SOUND)
-set_target_properties(${PROJECT_NAME}_sdl PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}")
+add_pntr(${PROJECT_NAME}_sdl SDL)
 
 # other examples
 # these should be behind EMSCRIPTEN check, since they don't really make sense on non-native
@@ -85,7 +82,7 @@ set_target_properties(${PROJECT_NAME}_sdl PROPERTIES RUNTIME_OUTPUT_DIRECTORY "$
 # add_executable(${PROJECT_NAME}_cli2 main.c)
 # add_pntr(${PROJECT_NAME}_cli2 TERMBOX)
 
-# # this will build "ugly" CLI
+# # this will build "ugly" CLI, with default of no sound
 # add_executable(${PROJECT_NAME}_cli3 main.c)
 # add_pntr(${PROJECT_NAME}_cli3 CLI)
 

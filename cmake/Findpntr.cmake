@@ -173,6 +173,7 @@ function(add_pntr target)
     FetchContent_Declare(
       raylib
       URL https://github.com/raysan5/raylib/archive/refs/tags/5.5.tar.gz
+      FIND_PACKAGE_ARGS REQUIRED
     )
     FetchContent_MakeAvailable(raylib)
     target_link_libraries("${pntr_lib_name}" raylib)
@@ -195,19 +196,20 @@ function(add_pntr target)
     FetchContent_Declare(
       SDL2
       URL https://github.com/libsdl-org/SDL/archive/refs/tags/release-2.30.10.tar.gz
+      FIND_PACKAGE_ARGS REQUIRED
     )
     FetchContent_MakeAvailable(SDL2)
-    target_link_libraries("${pntr_lib_name}" SDL2-static)
+
+    target_link_libraries("${pntr_lib_name}" SDL2::SDL2 SDL2::SDL2-static)
+    include_directories(${SDL2_INCLUDE_DIRS})
 
     if ("${PNTR_APP_SOUND}" STREQUAL "SDL")
       FetchContent_Declare(
-          SDL2MixerSource
+          SDL2_mixer
           URL https://github.com/libsdl-org/SDL_mixer/archive/refs/tags/release-2.8.0.tar.gz
+          FIND_PACKAGE_ARGS REQUIRED
       )
-      FetchContent_MakeAvailable(SDL2MixerSource)
-
-      # TODO: I seem to need this to make SDL2_mixer::SDL2_mixer-static available, but maybe there is a better way?
-      find_package(SDL2_mixer REQUIRED)
+      FetchContent_MakeAvailable(SDL2_mixer)
 
       set(SDL2MIXER_VORBIS STB)
       set(SDL2MIXER_INSTALL OFF)
@@ -233,7 +235,8 @@ function(add_pntr target)
       set(SDL2MIXER_SAMPLES_INSTALL OFF)
       set(SDL2MIXER_BUILD_SHARED_LIBS OFF)
       
-      target_link_libraries("${pntr_lib_name}" SDL2_mixer::SDL2_mixer-static)
+      target_link_libraries("${pntr_lib_name}" SDL2_mixer::SDL2_mixer-static GME)
+      include_directories(${SDL2_mixer_INCLUDE_DIRS})
     endif()
   endif()
 

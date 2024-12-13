@@ -17,4 +17,4 @@ emcmake cmake -B wbuild -G Ninja
 cmake --build wbuild
 ```
 
-I am still workign on linking all the deps/vars, so you might not get functional builds from all the examples.
+I am still working on linking all the deps/vars, so you might not get functional builds from all the examples.
