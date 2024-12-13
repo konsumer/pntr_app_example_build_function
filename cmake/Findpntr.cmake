@@ -1,6 +1,29 @@
 # setup different permutations of pntr/pntr_app and dependencies
 # this file should be all a user needs to add pntr_app to their project
 
+## usage example
+## order does not matter, and it's case-insensitive.
+# add_executable(mything main.c)
+# add_pntr(mything TERMBOX MINIAUDIO)
+
+# available window options:
+# NO_WINDOW
+# RAYLIB
+# RAYLIB_OLDPI
+# RAYLIB_DRM
+# SDL
+# RETRO
+# TERMBOX
+# CLI
+
+## available sound options
+# NO_SOUND
+# RAYLIB_SOUND
+# SDL_SOUND
+# MINIAUDIO
+
+## DEFAULTS to raylib or EMSCRIPTEN
+
 # this contains the main-override and basic window/input setup, like this is the "frame" of things
 set(PNTR_APP_DEFAULT_WINDOW "RAYLIB")
 
@@ -9,8 +32,6 @@ set(PNTR_APP_DEFAULT_SOUND "RAYLIB")
 
 # global-option to allow in-tree pntr_app (for demos in that repo)
 option(USE_LOCAL_PNTR_APP "Force using the current directory as source of pntr_app" OFF)
-
-# TODO: do I need to change options for EMSCRIPTEN?
 
 include(FetchContent)
 
@@ -46,7 +67,7 @@ function(add_pntr target)
         # TODO: add define for raylib build
       elseif ("${a}" STREQUAL "SDL")
         set(PNTR_APP_WINDOW "SDL")
-      elseif ("${a}" STREQUAL "SDL")
+      elseif ("${a}" STREQUAL "SDL_SOUND")
         set(PNTR_APP_SOUND "SDL")
       elseif ("${a}" STREQUAL "RETRO")
         set(PNTR_APP_WINDOW "RETRO")
