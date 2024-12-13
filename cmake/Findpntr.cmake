@@ -116,6 +116,7 @@ function(add_pntr target)
   string(TOLOWER "${pntr_lib_name}" pntr_lib_name)
   string(REPLACE "raylib_raylib" "raylib" pntr_lib_name "${pntr_lib_name}")
   string(REPLACE "sdl_sdl" "sdl" pntr_lib_name "${pntr_lib_name}")
+  string(REPLACE "retro_retro" "retro" pntr_lib_name "${pntr_lib_name}")
 
   # TODO: add suffix for different options, like pntr_app_raylib_drm_raylib
 
