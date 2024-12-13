@@ -12,9 +12,7 @@ option(USE_LOCAL_PNTR_APP "Force using the current directory as source of pntr_a
 
 # TODO: check for system-libs before fetching things
 
-# this is needed to fix a problem with <include.h> vs "include.h"
-# TODO: I could probly target this just to SDL
-set(CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES TRUE)
+# TODO: do I need to change options for EMSCRIPTEN?
 
 include(FetchContent)
 
@@ -200,7 +198,7 @@ function(add_pntr target)
     )
     FetchContent_MakeAvailable(SDL2)
 
-    target_link_libraries("${pntr_lib_name}" SDL2::SDL2 SDL2::SDL2-static)
+    target_link_libraries("${pntr_lib_name}" SDL2::SDL2-static)
     include_directories(${SDL2_INCLUDE_DIRS})
 
     if ("${PNTR_APP_SOUND}" STREQUAL "SDL")
@@ -235,7 +233,11 @@ function(add_pntr target)
       set(SDL2MIXER_SAMPLES_INSTALL OFF)
       set(SDL2MIXER_BUILD_SHARED_LIBS OFF)
       
-      target_link_libraries("${pntr_lib_name}" SDL2_mixer::SDL2_mixer-static GME)
+      target_link_libraries("${pntr_lib_name}" SDL2_mixer::SDL2_mixer-static)
+
+      # this appears to be needed by sdl_mixer, at least on mac
+      target_link_libraries("${pntr_lib_name}" GME)
+
       include_directories(${SDL2_mixer_INCLUDE_DIRS})
     endif()
   endif()

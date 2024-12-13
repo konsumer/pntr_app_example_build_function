@@ -44,43 +44,44 @@ if (EMSCRITPEN)
   )
 endif()
 
-# use raylib window/sound
-add_pntr(${PROJECT_NAME} RAYLIB)
-
-# this will use sdl window/nosound
-add_executable(${PROJECT_NAME}_sdl main.c)
-add_pntr(${PROJECT_NAME}_sdl SDL)
+# use default (SDL/emscripten) window/sound
+add_pntr(${PROJECT_NAME} )
 
 # other examples
-# these should be behind EMSCRIPTEN check, since they don't really make sense on non-native
+
+# these should arb behind EMSCRIPTEN check, since they don't really make sense on non-native
+# TODO: needs testing. would be cool to support RAYLIB/SDL web builds (if you wanted that for some reason)
+
 # these are case-insensitive
+
 # in pntr_app repo, I could loop (foreach or glob) through all the examples here and build many target examples for each demo
-# these could also be pulled form a central option, if everything is built on that (like if you have 10 targets, and want them all built for raylib)
+# these could also be pulled from a central option, if everything is built on that (like if you have 10 targets, and want them all built for raylib)
 
-# # default is just recommended (maybe SDL is good default?)
-# add_pntr(${PROJECT_NAME})
 
-# # this will use raylib for window/sound
-# add_executable(${PROJECT_NAME}_raylib main.c)
-# add_pntr(${PROJECT_NAME}_raylib RAYLIB)
+if (NOT EMSCRIPTEN)
+  # this will use sdl window/nosound
+  add_executable(${PROJECT_NAME}_raylib main.c)
+  add_pntr(${PROJECT_NAME}_raylib RAYLIB)
 
-# # this will use libretro for window/sound
-# add_library(${PROJECT_NAME}-libretro main.c)
-# add_pntr(${PROJECT_NAME}-libretro RETRO)
+  # this will use libretro for window/sound
+  add_library(${PROJECT_NAME}-libretro main.c)
+  add_pntr(${PROJECT_NAME}-libretro RETRO)
 
-# # this will use raylib window/sound, but set drm option for raylib
-# add_executable(${PROJECT_NAME}_raylib_drm main.c)
-# add_pntr(${PROJECT_NAME}_raylib_drm RAYLIB_DRM)
+  # this will use raylib window/sound, but set drm option for raylib
+  add_executable(${PROJECT_NAME}_raylib_drm main.c)
+  add_pntr(${PROJECT_NAME}_raylib_drm RAYLIB_DRM)
 
-# # this will use termbox for window, miniaudio for sound
-# add_executable(${PROJECT_NAME}_cli main.c)
-# add_pntr(${PROJECT_NAME}_cli TERMBOX MINIAUDIO)
+  # this will use termbox for window, miniaudio for sound
+  add_executable(${PROJECT_NAME}_cli main.c)
+  add_pntr(${PROJECT_NAME}_cli TERMBOX MINIAUDIO)
 
-# # this will use termbox default of no sound
-# add_executable(${PROJECT_NAME}_cli2 main.c)
-# add_pntr(${PROJECT_NAME}_cli2 TERMBOX)
+  # this will use termbox default of no sound
+  add_executable(${PROJECT_NAME}_cli2 main.c)
+  add_pntr(${PROJECT_NAME}_cli2 TERMBOX)
 
-# # this will build "ugly" CLI, with default of no sound
-# add_executable(${PROJECT_NAME}_cli3 main.c)
-# add_pntr(${PROJECT_NAME}_cli3 CLI)
+  # this will build "ugly" CLI, with default of no sound
+  add_executable(${PROJECT_NAME}_cli3 main.c)
+  add_pntr(${PROJECT_NAME}_cli3 CLI)
+endif()
+
 
