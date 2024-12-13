@@ -57,11 +57,17 @@ add_pntr(${PROJECT_NAME})
 
 if (NOT EMSCRIPTEN)
   # this will use sdl window/nosound
+  # disabled because I have issues building on mac
+  # add_executable(${PROJECT_NAME}_sdl main.c)
+  # add_pntr(${PROJECT_NAME}_sdl SDL)
+
+  # this will use raylib window/nosound
   add_executable(${PROJECT_NAME}_raylib main.c)
   add_pntr(${PROJECT_NAME}_raylib RAYLIB)
 
   # this will use libretro for window/sound
-  add_library(${PROJECT_NAME}-libretro main.c)
+  add_library(${PROJECT_NAME}-libretro SHARED main.c)
+  set_target_properties(${PROJECT_NAME}-libretro PROPERTIES PREFIX "") 
   add_pntr(${PROJECT_NAME}-libretro RETRO)
 
   # this will use raylib window/sound, but set drm option for raylib
@@ -69,16 +75,16 @@ if (NOT EMSCRIPTEN)
   add_pntr(${PROJECT_NAME}_raylib_drm RAYLIB_DRM)
 
   # this will use termbox for window, miniaudio for sound
-  add_executable(${PROJECT_NAME}_cli main.c)
-  add_pntr(${PROJECT_NAME}_cli TERMBOX MINIAUDIO)
+  add_executable(${PROJECT_NAME}_cli_minisound main.c)
+  add_pntr(${PROJECT_NAME}_cli_minisound TERMBOX MINIAUDIO)
 
   # this will use termbox default of no sound
-  add_executable(${PROJECT_NAME}_cli2 main.c)
-  add_pntr(${PROJECT_NAME}_cli2 TERMBOX)
+  add_executable(${PROJECT_NAME}_cli main.c)
+  add_pntr(${PROJECT_NAME}_cli TERMBOX)
 
   # this will build "ugly" CLI, with default of no sound
-  add_executable(${PROJECT_NAME}_cli3 main.c)
-  add_pntr(${PROJECT_NAME}_cli3 CLI)
+  add_executable(${PROJECT_NAME}_cli_ugly main.c)
+  add_pntr(${PROJECT_NAME}_cli_ugly CLI)
 endif()
 
 

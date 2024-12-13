@@ -141,6 +141,7 @@ function(add_pntr target)
   endif()
 
   # create a static library for all of pntr_app/pntr
+  # here is where you link anything to lib you need
   # add_library(${pntr_lib_name} STATIC "${fpntr_SOURCE_DIR}/pntr_app.c")
   if (NOT TARGET "${pntr_lib_name}")
     add_library("${pntr_lib_name}" STATIC "${CMAKE_CURRENT_LIST_DIR}/pntr_app.c")
@@ -148,11 +149,12 @@ function(add_pntr target)
     set_property(TARGET "${pntr_lib_name}" PROPERTY C_STANDARD 11)
     
     # Strict Warnings and Errors
-    if(MSVC)
-        target_compile_options("${pntr_lib_name}" PRIVATE /W4 /WX)
-    else()
-        target_compile_options("${pntr_lib_name}" PRIVATE -Wall -Wextra -Wpedantic -Werror)
-    endif()
+    # will fail to build libretro
+    # if(MSVC)
+    #     target_compile_options("${pntr_lib_name}" PRIVATE /W4 /WX)
+    # else()
+    #     target_compile_options("${pntr_lib_name}" PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    # endif()
     
     if ("${PNTR_APP_WINDOW}" STREQUAL "SDL")
       target_compile_definitions("${pntr_lib_name}" PUBLIC PNTR_APP_SDL)
@@ -170,12 +172,37 @@ function(add_pntr target)
       target_compile_definitions("${pntr_lib_name}" PUBLIC PNTR_APP_RAYLIB_SOUND)
     endif()
 
-    # TODO: add lots more defines for pntr_app static lib here
+    if ("${PNTR_APP_WINDOW}" STREQUAL "TERMBOX")
+      target_compile_definitions("${pntr_lib_name}" PUBLIC PNTR_APP_CLI)
+    endif()
+    
+    if ("${PNTR_APP_WINDOW}" STREQUAL "CLI")
+      target_compile_definitions("${pntr_lib_name}" PUBLIC PNTR_APP_CLI)
+      target_compile_definitions("${pntr_lib_name}" PUBLIC PNTR_APP_DISABLE_TERMBOX)
+    endif()
+
+    if ("${PNTR_APP_WINDOW}" STREQUAL "RETRO")
+      target_compile_definitions("${pntr_lib_name}" PUBLIC PNTR_APP_LIBRETRO)
+    endif()
   endif()
 
   target_link_libraries("${target}" "${pntr_lib_name}")
   include_directories("${fpntr_app_SOURCE_DIR}/include")
   include_directories("${fpntr_SOURCE_DIR}")
+
+  if ("${PNTR_APP_SOUND}" STREQUAL "RETRO" OR "${PNTR_APP_WINDOW}" STREQUAL "RETRO")
+    FetchContent_Declare(
+      libretro
+      URL https://github.com/libretro/libretro-common/archive/refs/heads/master.zip
+    )
+    FetchContent_MakeAvailable(libretro)
+    include_directories("${libretro_SOURCE_DIR}/include")
+    target_sources("${pntr_lib_name}" PRIVATE 
+      "${libretro_SOURCE_DIR}/audio/audio_mixer.c"
+      "${libretro_SOURCE_DIR}/audio/conversion/float_to_s16.c"
+      "${libretro_SOURCE_DIR}/memmap/memalign.c"
+    )
+  endif()
 
   if ("${PNTR_APP_SOUND}" STREQUAL "RAYLIB" OR "${PNTR_APP_WINDOW}" STREQUAL "RAYLIB")
     set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
@@ -253,26 +280,6 @@ function(add_pntr target)
 
       include_directories(${SDL2_mixer_INCLUDE_DIRS})
     endif()
-  endif()
-
-  if ("${PNTR_APP_WINDOW}" STREQUAL "TERMBOX")
-    # TODO: actually link lib here
-  endif()
-
-  if ("${PNTR_APP_WINDOW}" STREQUAL "CLI")
-    # TODO: actually link lib here
-  endif()
-
-  if ("${PNTR_APP_SOUND}" STREQUAL "MINIAUDIO")
-    # TODO: actually link lib here
-  endif()
-
-  if ("${PNTR_APP_WINDOW}" STREQUAL "NONE")
-    # TODO: set var here
-  endif()
-
-  if ("${PNTR_APP_SOUND}" STREQUAL "NONE")
-    # TODO: set var here
   endif()
 
 endfunction()

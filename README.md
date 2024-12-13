@@ -26,3 +26,5 @@ The script will attempt to use installed deps, if available, and that is recomme
 ```
 brew install sdl2 sdl2_image sdl2_mixer raylib
 ```
+
+pntr_app.c should be in pntr_app repo. It's just a small entrypoint for static-lib.
