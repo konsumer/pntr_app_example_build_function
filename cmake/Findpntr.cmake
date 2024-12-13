@@ -127,7 +127,7 @@ function(add_pntr target)
   # download deps that are needed by window/sound (that have not been downloaded)
 
   FetchContent_Declare(fpntr
-    URL https://github.com/robloach/pntr/archive/refs/heads/master.zip
+    URL "https://github.com/robloach/pntr/archive/refs/heads/master.zip"
   )
   FetchContent_MakeAvailable(fpntr)
 
@@ -135,7 +135,7 @@ function(add_pntr target)
     set(fpntr_SOURCE_DIR "${CMAKE_CURRENT_LIST_DIR}")
   else()
     FetchContent_Declare(fpntr_app
-      URL https://github.com/robloach/pntr_app/archive/refs/heads/master.zip
+      URL "https://github.com/robloach/pntr_app/archive/refs/heads/master.zip"
     )
     FetchContent_MakeAvailable(fpntr_app)
   endif()
@@ -183,6 +183,7 @@ function(add_pntr target)
 
     if ("${PNTR_APP_WINDOW}" STREQUAL "RETRO")
       target_compile_definitions("${pntr_lib_name}" PUBLIC PNTR_APP_LIBRETRO)
+      set_target_properties("${pntr_lib_name}" PROPERTIES POSITION_INDEPENDENT_CODE ON)
     endif()
   endif()
 
@@ -193,7 +194,7 @@ function(add_pntr target)
   if ("${PNTR_APP_SOUND}" STREQUAL "RETRO" OR "${PNTR_APP_WINDOW}" STREQUAL "RETRO")
     FetchContent_Declare(
       libretro
-      URL https://github.com/libretro/libretro-common/archive/refs/heads/master.zip
+      URL "https://github.com/libretro/libretro-common/archive/refs/heads/master.zip"
     )
     FetchContent_MakeAvailable(libretro)
     include_directories("${libretro_SOURCE_DIR}/include")
@@ -210,8 +211,8 @@ function(add_pntr target)
     # TODO: handle options like DRM, etc
     FetchContent_Declare(
       raylib
-      URL https://github.com/raysan5/raylib/archive/refs/tags/5.5.tar.gz
       FIND_PACKAGE_ARGS
+      URL "https://github.com/raysan5/raylib/archive/refs/tags/5.5.zip"
     )
     FetchContent_MakeAvailable(raylib)
     target_link_libraries("${pntr_lib_name}" raylib)
@@ -233,8 +234,8 @@ function(add_pntr target)
 
     FetchContent_Declare(
       SDL2
-      URL https://github.com/libsdl-org/SDL/archive/refs/tags/release-2.30.10.tar.gz
       FIND_PACKAGE_ARGS
+      URL "https://github.com/libsdl-org/SDL/archive/refs/tags/release-2.30.10.zip"
     )
     FetchContent_MakeAvailable(SDL2)
 
@@ -244,8 +245,8 @@ function(add_pntr target)
     if ("${PNTR_APP_SOUND}" STREQUAL "SDL")
       FetchContent_Declare(
           SDL2_mixer
-          URL https://github.com/libsdl-org/SDL_mixer/archive/refs/tags/release-2.8.0.tar.gz
           FIND_PACKAGE_ARGS
+          URL "https://github.com/libsdl-org/SDL_mixer/archive/refs/tags/release-2.8.0.zip"
       )
       FetchContent_MakeAvailable(SDL2_mixer)
 

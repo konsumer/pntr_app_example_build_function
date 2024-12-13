@@ -67,7 +67,6 @@ if (NOT EMSCRIPTEN)
 
   # this will use libretro for window/sound
   add_library(${PROJECT_NAME}-libretro SHARED main.c)
-  set_target_properties(${PROJECT_NAME}-libretro PROPERTIES PREFIX "") 
   add_pntr(${PROJECT_NAME}-libretro RETRO)
 
   # this will use raylib window/sound, but set drm option for raylib
