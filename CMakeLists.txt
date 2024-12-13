@@ -43,14 +43,18 @@ if (EMSCRITPEN)
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}/docs"
   )
 else()
-  set_target_properties(${PROJECT_NAME}
-    PROPERTIES
-    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
-  )
+  set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}")
 endif()
 
-# there is an issue building SDL_mixer so I just do this one
+# there is an issue building SDL_mixer so I just do these for now
+
+# use raylib window/sound
 add_pntr(${PROJECT_NAME} RAYLIB)
+
+# this will use sdl window/nosound
+add_executable(${PROJECT_NAME}_sdl main.c)
+add_pntr(${PROJECT_NAME}_sdl SDL NO_SOUND)
+set_target_properties(${PROJECT_NAME}_sdl PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}")
 
 # other examples
 # these should be behind EMSCRIPTEN check, since they don't really make sense on non-native
@@ -58,7 +62,7 @@ add_pntr(${PROJECT_NAME} RAYLIB)
 # in pntr_app repo, I could loop (foreach or glob) through all the examples here and build many target examples for each demo
 # these could also be pulled form a central option, if everything is built on that (like if you have 10 targets, and want them all built for raylib)
 
-# # default is just recommended (maybe SDL is good default)
+# # default is just recommended (maybe SDL is good default?)
 # add_pntr(${PROJECT_NAME})
 
 # # this will use raylib for window/sound
@@ -72,10 +76,6 @@ add_pntr(${PROJECT_NAME} RAYLIB)
 # # this will use raylib window/sound, but set drm option for raylib
 # add_executable(${PROJECT_NAME}_raylib_drm main.c)
 # add_pntr(${PROJECT_NAME}_raylib_drm RAYLIB_DRM)
-
-# # this will use sdl window/sound
-# add_executable(${PROJECT_NAME}_sdl main.c)
-# add_pntr(${PROJECT_NAME}_sdl SDL)
 
 # # this will use termbox for window, miniaudio for sound
 # add_executable(${PROJECT_NAME}_cli main.c)
