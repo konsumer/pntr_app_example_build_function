@@ -25,6 +25,7 @@ set(CMAKE_COLOR_DIAGNOSTICS ON)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
 # set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_BUILD_TYPE Release)
 
 ####
 
@@ -45,18 +46,14 @@ if (EMSCRITPEN)
 endif()
 
 # use default (SDL/emscripten) window/sound
-add_pntr(${PROJECT_NAME} )
+add_pntr(${PROJECT_NAME})
 
 # other examples
 
-# these should arb behind EMSCRIPTEN check, since they don't really make sense on non-native
+# these are behind EMSCRIPTEN check, since they don't really make sense on non-native
 # TODO: needs testing. would be cool to support RAYLIB/SDL web builds (if you wanted that for some reason)
 
 # these are case-insensitive
-
-# in pntr_app repo, I could loop (foreach or glob) through all the examples here and build many target examples for each demo
-# these could also be pulled from a central option, if everything is built on that (like if you have 10 targets, and want them all built for raylib)
-
 
 if (NOT EMSCRIPTEN)
   # this will use sdl window/nosound

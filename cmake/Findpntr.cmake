@@ -2,19 +2,29 @@
 # this file should be all a user needs to add pntr_app to their project
 
 # this contains the main-override and basic window/input setup, like this is the "frame" of things
-set(PNTR_APP_DEFAULT_WINDOW "SDL") 
+set(PNTR_APP_DEFAULT_WINDOW "RAYLIB") 
 
 # this contains the sound lib in most cases, this is tied to window lib, but sometimes not (like CLI)
-set(PNTR_APP_DEFAULT_SOUND "SDL")
+set(PNTR_APP_DEFAULT_SOUND "RAYLIB")
 
 # global-option to allow in-tree pntr_app (for demos in that repo)
 option(USE_LOCAL_PNTR_APP "Force using the current directory as source of pntr_app" OFF)
 
-# TODO: check for system-libs before fetching things
-
 # TODO: do I need to change options for EMSCRIPTEN?
 
 include(FetchContent)
+
+# this causes crt error on mac, but you might want it for other things
+# SET (CMAKE_EXE_LINKER_FLAGS "-static")
+
+# you might need this if you are building sdl/raylib
+# IF(APPLE)
+#     set(CMAKE_THREAD_LIBS_INIT "-lpthread")
+#     set(CMAKE_HAVE_THREADS_LIBRARY 1)
+#     set(CMAKE_USE_WIN32_THREADS_INIT 0)
+#     set(CMAKE_USE_PTHREADS_INIT 1)
+#     set(THREADS_PREFER_PTHREAD_FLAG ON)
+# ENDIF()
 
 # this will allow you to easily add pntr/pntr_app to your application
 function(add_pntr target)
@@ -101,8 +111,11 @@ function(add_pntr target)
 
   # TODO: here I could check warn about unsupported/bad combos
 
+  # create a normalized library-name
   set(pntr_lib_name "pntr_app_${PNTR_APP_WINDOW}_${PNTR_APP_SOUND}")
   string(TOLOWER "${pntr_lib_name}" pntr_lib_name)
+  string(REPLACE "raylib_raylib" "raylib" pntr_lib_name "${pntr_lib_name}")
+  string(REPLACE "sdl_sdl" "sdl" pntr_lib_name "${pntr_lib_name}")
 
   # TODO: add suffix for different options, like pntr_app_raylib_drm_raylib
 
@@ -171,7 +184,7 @@ function(add_pntr target)
     FetchContent_Declare(
       raylib
       URL https://github.com/raysan5/raylib/archive/refs/tags/5.5.tar.gz
-      FIND_PACKAGE_ARGS REQUIRED
+      FIND_PACKAGE_ARGS
     )
     FetchContent_MakeAvailable(raylib)
     target_link_libraries("${pntr_lib_name}" raylib)
@@ -194,7 +207,7 @@ function(add_pntr target)
     FetchContent_Declare(
       SDL2
       URL https://github.com/libsdl-org/SDL/archive/refs/tags/release-2.30.10.tar.gz
-      FIND_PACKAGE_ARGS REQUIRED
+      FIND_PACKAGE_ARGS
     )
     FetchContent_MakeAvailable(SDL2)
 
@@ -205,7 +218,7 @@ function(add_pntr target)
       FetchContent_Declare(
           SDL2_mixer
           URL https://github.com/libsdl-org/SDL_mixer/archive/refs/tags/release-2.8.0.tar.gz
-          FIND_PACKAGE_ARGS REQUIRED
+          FIND_PACKAGE_ARGS
       )
       FetchContent_MakeAvailable(SDL2_mixer)
 

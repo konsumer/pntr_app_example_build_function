@@ -18,3 +18,11 @@ cmake --build wbuild
 ```
 
 I am still working on linking all the deps/vars, so you might not get functional builds from all the examples.
+
+
+The script will attempt to use installed deps, if available, and that is recommended if it's an option. For example, on mac:
+
+
+```
+brew install sdl2 sdl2_image sdl2_mixer raylib
+```
