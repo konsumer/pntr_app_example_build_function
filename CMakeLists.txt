@@ -76,7 +76,7 @@ if (NOT EMSCRIPTEN)
 
   # this will use termbox for window, miniaudio for sound
   add_executable(${PROJECT_NAME}_cli_minisound main.c)
-  add_pntr(${PROJECT_NAME}_cli_minisound TERMBOX MINIAUDIO)
+  add_pntr(${PROJECT_NAME}_cli_minisound TERMBOX RAYLIB_AUDIO)
 
   # this will use termbox default of no sound
   add_executable(${PROJECT_NAME}_cli main.c)

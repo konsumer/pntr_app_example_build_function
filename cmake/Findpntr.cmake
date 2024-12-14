@@ -4,7 +4,7 @@
 ## usage example
 ## order does not matter, and it's case-insensitive.
 # add_executable(mything main.c)
-# add_pntr(mything TERMBOX MINIAUDIO)
+# add_pntr(mything TERMBOX RAYLIB_SOUND)
 
 ## available window options:
 # NO_WINDOW
@@ -20,7 +20,6 @@
 # NO_SOUND
 # RAYLIB_SOUND
 # SDL_SOUND
-# MINIAUDIO
 
 ## DEFAULTS to RAYLIB/RAYLIB_SOUND or EMSCRIPTEN (if running in emcmake)
 
@@ -76,8 +75,6 @@ function(add_pntr target)
         set(PNTR_APP_WINDOW "CLI")
       elseif ("${a}" STREQUAL "TERMBOX")
         set(PNTR_APP_WINDOW "TERMBOX")
-      elseif ("${a}" STREQUAL "MINIAUDIO")
-        set(PNTR_APP_SOUND "MINIAUDIO")
       elseif ("${a}" STREQUAL "NO_SOUND")
         set(PNTR_APP_SOUND "NONE")
       elseif ("${a}" STREQUAL "NO_WINDOW")
@@ -183,7 +180,7 @@ function(add_pntr target)
       target_compile_definitions("${pntr_lib_name}" PUBLIC PNTR_APP_RAYLIB)
     endif()
 
-    # TODO: this isn't used yet, as RAYLIB sound/window are tied, but they could be seperated
+    # TODO: this isn't used yet, as RAYLIB sound/window are currently coupled, but they should be seperated
     if ("${PNTR_APP_SOUND}" STREQUAL "RAYLIB")
       target_compile_definitions("${pntr_lib_name}" PUBLIC PNTR_APP_RAYLIB_SOUND)
     endif()
@@ -233,7 +230,7 @@ function(add_pntr target)
     )
   endif()
 
-  if ("${PNTR_APP_SOUND}" STREQUAL "RAYLIB" OR "${PNTR_APP_WINDOW}" STREQUAL "RAYLIB")
+  if ("${PNTR_APP_WINDOW}" STREQUAL "RAYLIB")
     set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
     set(BUILD_GAMES    OFF CACHE BOOL "" FORCE)
     # TODO: handle options like DRM, etc
@@ -246,8 +243,20 @@ function(add_pntr target)
     if (APPLE AND NOT EMSCRIPTEN)
       target_link_libraries("${pntr_lib_name}" "-framework IOKit" "-framework Cocoa" "-framework OpenGL")
     endif()
+  else()
+    # raudio is uses for PNTR_APP_SOUND=RAYLIB to decouple them
+    if ("${PNTR_APP_SOUND}" STREQUAL "RAYLIB" )
+      FetchContent_Declare(
+        raudio
+        URL "https://github.com/raysan5/raudio/archive/refs/heads/master.zip"
+      )
+      FetchContent_MakeAvailable(raudio)
+      target_link_libraries("${pntr_lib_name}" raudio)
+      include_directories("${raudio_SOURCE_DIR}/src" "${raudio_SOURCE_DIR}/src/external")
+    endif()
   endif()
 
+  # SDL_MIXER needs SDL, so these are tied together
   if ("${PNTR_APP_SOUND}" STREQUAL "SDL" OR "${PNTR_APP_WINDOW}" STREQUAL "SDL")
     set(SDL_SHARED FALSE)
     set(SDL2_SHARED FALSE)
